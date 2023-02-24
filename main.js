@@ -3,33 +3,53 @@ const form = document.querySelector('#myForm')
 const nameInput = document.querySelector('#name');
 const emailInput = document.querySelector('#email');
 const phoneInput = document.querySelector('#phone');
+const ul = document.querySelector('#users');
 
-//create ul
-const ul = document.createElement('ul');
+
+window.addEventListener('DOMContentLoaded', () => {
+    //axios get
+    axios
+        .get('https://crudcrud.com/api/72a39688bfaf425ea380c94a8b205a07/appointmentAppData')
+        .then((res) => {
+            console.log('ok');
+
+            for (let i = 0; i < res.data.length; i++) {
+                showNewUser(res.data[i]);
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+});
 
 //event on submitBtn
 form.addEventListener('submit', (e) => {
     e.preventDefault();
-
-    //create Object for local storage
+    //create Objects
     let obj = {
         name: nameInput.value,
         email: emailInput.value,
         phone: phoneInput.value
     };
-    
+
     // axios post
     axios
-        .post('https://crudcrud.com/api/17e448c1b2884d94bba8602640b9c3fd/appointmentData', obj)
+        .post('https://crudcrud.com/api/72a39688bfaf425ea380c94a8b205a07/appointmentAppData', obj)
         .then((res) => {
-            form.insertAdjacentElement('afterend', ul);  
-            console.log(res)
+            showNewUser(res.data);
         })
         .catch((err) => {
             document.body.innerHTML = document.body.innerHTML + '<h4>Something went wrong</h4>';
             console.log(err);
         });
+    //clear fields
+    nameInput.value = '';
+    emailInput.value = '';
+    phoneInput.value = '';
+});
 
+//Function for adding new users
+function showNewUser(user) {
     //create li for the ul
     const li = document.createElement('li');
     //create edit btn
@@ -38,7 +58,7 @@ form.addEventListener('submit', (e) => {
     const deleteBtn = document.createElement('button');
 
     //create text node to li
-    li.appendChild(document.createTextNode(obj.name + '-' + obj.email + '-' + obj.phone));
+    li.appendChild(document.createTextNode(`${user.name} - ${user.email} - ${user.phone}`));
     //create tect node to edit btn
     editBtn.appendChild(document.createTextNode('Edit'));
     //create text node to delete button
@@ -50,23 +70,17 @@ form.addEventListener('submit', (e) => {
     li.appendChild(deleteBtn);
     //append that li to ul
     ul.appendChild(li);
-    
-    //insert it into html
-    
-    
+
     //edit button event
     editBtn.addEventListener('click', (e) => {
-        
+
         //displaying the input values
-        document.getElementById('name').value = obj.name;
-        document.getElementById('email').value = obj.email;
-        document.getElementById('phone').value = obj.phone;
+        document.getElementById('name').value = user.name;
+        document.getElementById('email').value = user.email;
+        document.getElementById('phone').value = user.phone;
 
         //delete the li from ul
         ul.removeChild(li);
-        
-        //delete data from local storage
-        localStorage.removeItem(obj.email); 
     });
 
     //delete button event
@@ -75,19 +89,11 @@ form.addEventListener('submit', (e) => {
         //delete the li from ul
         ul.removeChild(li);
 
-        //delete data from local storage
-        localStorage.removeItem(obj.email);
-
         //clear fields
-        obj.name = '';
-        obj.email = '';
-        obj.phone = '';     
+        user.name = '';
+        user.email = '';
+        user.phone = '';
     });
-
-    //clear fields
-    nameInput.value = '';
-    emailInput.value = '';
-    phoneInput.value = ''; 
-});
+}
 
 
