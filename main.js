@@ -58,12 +58,29 @@ function showNewUser(user) {
     editInput.name = 'edit';
     editInput.value = 'Edit';
     editInput.onclick = () => {
-        //delete the li from ul
-        ul.removeChild(li);
+        console.log(user);
         //displaying the input values
         document.getElementById('name').value = user.name;
         document.getElementById('email').value = user.email;
         document.getElementById('phone').value = user.phone;
+
+        //delete the li from ul
+        ul.removeChild(li);
+        
+        let obj = {
+            name: nameInput.value,
+            email: emailInput.value,
+            phone: phoneInput.value
+        };
+
+        axios
+            .put(`https://crudcrud.com/api/b7e900a13dff4dac9d9e236dc283bb30/appointmentAppData/${user._id}`, obj)
+            .then((res) => {
+                console.log('ok')
+            })
+            .catch((err) => {
+                console.log(err);
+            })
     };
        
     // create delete btn
